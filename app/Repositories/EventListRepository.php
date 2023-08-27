@@ -64,7 +64,7 @@ class EventListRepository
             ->where('read_status', false)
             ->selectRaw("
                 id,
-                CONCAT('RandomUser', FLOOR(RAND() * 1000), ' bought ', name, ' from you for ', amount, ' USD!') as message,
+                CONCAT('RandomUser', FLOOR(RAND() * 1000), ' bought ', amount, ' ', name, ' from you for ', (amount * unit_price) , ' USD!') as message,
                 read_status,
                 'merch_sale' AS type,
                 created_at

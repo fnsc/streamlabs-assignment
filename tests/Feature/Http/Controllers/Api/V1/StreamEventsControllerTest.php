@@ -32,6 +32,7 @@ class StreamEventsControllerTest extends TestCase
 
         // Assertions
         $result->assertStatus(Response::HTTP_OK);
+        $result->assertJsonFragment(['first_page_url' => 'http://localhost/api/v1/event-list?page=1']);
     }
 
     private function setupSubscribersData($user): void

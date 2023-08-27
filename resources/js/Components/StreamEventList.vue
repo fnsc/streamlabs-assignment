@@ -9,7 +9,6 @@ const state = reactive({
     pagination: {}
 })
 
-
 function fetch(url) {
     axios.defaults.headers.common['Authorization'] = 'Bearer ' + state.accessToken;
     axios.get(url)

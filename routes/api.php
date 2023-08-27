@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\StreamEventsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +18,12 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::as('api.v1')
+    ->prefix('v1')
+    ->middleware(['auth:api'])
+    ->group(function () {
+        Route::get('event-list', [StreamEventsController::class, 'getList'])
+            ->name('.event-list');
+    });
+

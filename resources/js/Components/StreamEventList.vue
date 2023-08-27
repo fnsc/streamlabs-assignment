@@ -22,6 +22,21 @@ function fetch(url) {
 }
 
 fetch('api/v1/event-list');
+
+function updatedStatus(activity) {
+    let body = {
+        'id': activity.id,
+        'status': activity.read_status,
+        'type': activity.type
+    };
+
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + state.accessToken;
+    axios.post('api/v1/update-event', body).then((data) => {
+        console.log(data)
+    }).catch(({error}) => {
+        console.log(error)
+    })
+}
 </script>
 <template>
   <div class="overflow-x-auto p-4">
@@ -42,6 +57,7 @@ fetch('api/v1/event-list');
                     type="checkbox"
                     v-model="activity.read_status"
                     class="form-checkbox h-5 w-5 text-indigo-600"
+                    @click="updatedStatus(activity)"
                   />
                 </label>
               </div>

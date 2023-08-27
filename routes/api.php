@@ -24,6 +24,9 @@ Route::as('api.v1')
     ->middleware(['auth:api'])
     ->group(function () {
         Route::get('event-list', [StreamEventsController::class, 'getList'])
-            ->name('.event-list');
+            ->name('.stream-events.getList');
+
+        Route::post('update-event', [StreamEventsController::class, 'updateStatus'])
+            ->name('.stream-events.updateStatus');
     });
 

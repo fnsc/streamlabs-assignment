@@ -14,7 +14,7 @@ use Laravel\Socialite\Facades\Socialite;
 use Symfony\Component\HttpFoundation\Cookie as SymfonyCookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class YoutubeSocialiteController extends Controller
+class YouTubeSocialiteController extends Controller
 {
     public function __construct(private readonly SocialiteService $socialiteService)
     {

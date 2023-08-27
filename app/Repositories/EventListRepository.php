@@ -21,10 +21,11 @@ class EventListRepository
     public function getEventList(EventListInput $evenListInput): LengthAwarePaginator
     {
         $userId = $evenListInput->getUser()->id;
+        $status = $evenListInput->getStatus();
 
-        $donations = $this->getDonationsQuery($userId);
-        $subscribers = $this->getSubscribersQuery($userId);
-        $merchSales = $this->getMerchSaleQuery($userId);
+        $donations = $this->getDonationsQuery($userId, $status);
+        $subscribers = $this->getSubscribersQuery($userId, $status);
+        $merchSales = $this->getMerchSaleQuery($userId, $status);
 
         $query = $donations->unionAll($subscribers)->unionAll($merchSales);
 
@@ -32,42 +33,57 @@ class EventListRepository
             ->paginate($evenListInput->getPerPage());
     }
 
-    private function getDonationsQuery(int $userId): Builder
+    private function getDonationsQuery(int $userId, ?bool $status): Builder
     {
-        return $this->donationModel->where('streamer_id', $userId)
-            ->where('read_status', false)
-            ->selectRaw("
+        $query = $this->donationModel->selectRaw("
                 id,
                 CONCAT('RandomUser', FLOOR(RAND() * 1000), ' donated ', amount, ' USD to you!') as message,
                 read_status,
                 'donation' AS type,
                 created_at
-            ");
+            ")->where('streamer_id', $userId);
+
+        if (is_null($status)) {
+            return  $query;
+        }
+
+        return $query->where('read_status', $status);
+
     }
 
-    private function getSubscribersQuery(int $userId): Builder
+    private function getSubscribersQuery(int $userId, ?bool $status): Builder
     {
-        return $this->subscriberModel->where('streamer_id', $userId)
-            ->where('read_status', false)
-            ->selectRaw("
+        $query = $this->subscriberModel->selectRaw("
                 id,
-                CONCAT('RandomUser', FLOOR(RAND() * 1000), ' (Tier', tier, ') subscribed to you!') as message,
+                CONCAT(name, ' (Tier', tier, ') subscribed to you!') as message,
                 read_status,
                 'subscriber' AS type,
                 created_at
-            ");
+            ")->where('streamer_id', $userId);
+
+        if (is_null($status)) {
+            return  $query;
+        }
+
+        return $query->where('read_status', $status);
+
     }
 
-    private function getMerchSaleQuery(int $userId): Builder
+    private function getMerchSaleQuery(int $userId, ?bool $status): Builder
     {
-        return $this->merchSaleModel->where('streamer_id', $userId)
-            ->where('read_status', false)
-            ->selectRaw("
+        $query = $this->merchSaleModel->selectRaw("
                 id,
                 CONCAT('RandomUser', FLOOR(RAND() * 1000), ' bought ', amount, ' ', name, ' from you for ', (amount * unit_price) , ' USD!') as message,
                 read_status,
                 'merch_sale' AS type,
                 created_at
-            ");
+            ")
+            ->where('streamer_id', $userId);
+
+        if (is_null($status)) {
+            return  $query;
+        }
+
+        return $query->where('read_status', $status);
     }
 }

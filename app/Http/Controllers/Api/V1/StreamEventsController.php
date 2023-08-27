@@ -26,9 +26,10 @@ class StreamEventsController extends Controller
     public function getList(Request $request): JsonResponse
     {
         try {
-            $filters = $this->prepareFilters($request);
+            $status = $request->get('status', null);
+            $perPage = $request->get('per_page', 100);
             $user = auth()->user();
-            $input = new EventListInput($user, $filters['status'], $filters['page'], $filters['per_page']);
+            $input = new EventListInput($user, $status, $perPage);
             $events = $this->eventsListService->handle($input);
 
             return new JsonResponse($events);
@@ -65,14 +66,5 @@ class StreamEventsController extends Controller
 
             return new JsonResponse([], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-    }
-
-    private function prepareFilters(Request $request): array
-    {
-        return [
-            'status' => $request->get('status', null),
-            'page' => $request->get('page', 1),
-            'per_page' => $request->get('per_page', 100),
-        ];
     }
 }

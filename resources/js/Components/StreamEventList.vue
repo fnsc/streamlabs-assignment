@@ -26,7 +26,7 @@ fetch('api/v1/event-list');
 function updatedStatus(activity) {
     let body = {
         'id': activity.id,
-        'status': activity.read_status,
+        'status': !activity.read_status,
         'type': activity.type
     };
 
@@ -55,6 +55,7 @@ function updatedStatus(activity) {
                 <label class="flex items-center space-x-2">
                   <input
                     type="checkbox"
+                    v-bind="activity.read_status"
                     v-model="activity.read_status"
                     class="form-checkbox h-5 w-5 text-indigo-600"
                     @click="updatedStatus(activity)"

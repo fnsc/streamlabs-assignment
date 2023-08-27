@@ -5,6 +5,8 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import SecondaryButton
+    from "../../../../vendor/laravel/breeze/stubs/inertia-vue/resources/js/Components/SecondaryButton.vue";
 
 const form = useForm({
     name: '',
@@ -17,6 +19,10 @@ const submit = () => {
     form.post(route('register'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
+};
+
+const loginWithSocial = () => {
+    window.location.href = route('socialite.youtube.redirect');
 };
 </script>
 
@@ -93,6 +99,13 @@ const submit = () => {
                 >
                     Already registered?
                 </Link>
+
+                <SecondaryButton
+                    @click="loginWithSocial"
+                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                    Login with YouTube
+                </SecondaryButton>
 
                 <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     Register

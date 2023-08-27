@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Socialite\YoutubeSocialiteController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -36,3 +37,14 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::as('socialite')
+    ->middleware('guest')
+    ->prefix('auth')
+    ->group(function () {
+        Route::get('redirect', [YoutubeSocialiteController::class, 'redirect'])
+            ->name('.youtube.redirect');
+
+        Route::get('callback', [YoutubeSocialiteController::class, 'callback'])
+            ->name('.youtube.callback');
+    });

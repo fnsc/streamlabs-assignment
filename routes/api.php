@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\FollowersController;
 use App\Http\Controllers\Api\V1\StreamEventsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -28,5 +29,8 @@ Route::as('api.v1')
 
         Route::post('update-event', [StreamEventsController::class, 'updateStatus'])
             ->name('.stream-events.updateStatus');
+
+        Route::get('followers-count', [FollowersController::class, 'getFollowerCountLast30Days'])
+            ->name('.widget.followers-count');
     });
 

@@ -3,11 +3,17 @@
 namespace Tests\Feature\Http\Controllers\Api\V1;
 
 use App\Models\User;
+use App\Services\StreamEventsList\EventListInput;
+use App\Services\StreamEventsList\StreamEventsListService;
+use App\Services\UpdateEventStatus\UpdateEventStatusInput;
+use App\Services\UpdateEventStatus\UpdateEventStatusService;
 use DateTime;
+use Exception;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\Passport;
+use Mockery as m;
 use Tests\TestCase;
 
 class StreamEventsControllerTest extends TestCase
@@ -57,6 +63,64 @@ class StreamEventsControllerTest extends TestCase
         // Assertions
         $result->assertStatus(Response::HTTP_OK);
         $this->assertDatabaseHas($expectedTable, ['read_status' => 1]);
+    }
+
+    public function testShouldGetAnErrorWhenGettingEventList(): void
+    {
+        // Set
+        $service = $this->instance(StreamEventsListService::class, m::mock(StreamEventsListService::class));
+        $user = User::create([
+            'name' => 'John Doe',
+            'email' => 'johnDoe@gmail.com'
+        ]);
+        Passport::actingAs($user);
+
+        $this->setupSubscribersData($user);
+        $this->setupDonationsData($user);
+        $this->setupMerchData($user);
+
+        // Expectations
+        $service->expects()
+            ->handle(m::type(EventListInput::class))
+            ->andThrow(Exception::class);
+
+        // Action
+        $result = $this->getJson('/api/v1/event-list');
+
+        // Assertions
+        $result->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
+        $result->assertContent('{"error":"Something unexpected has happened"}');
+    }
+
+    public function testShouldGetAnErrorWhenUpdatingAnEvent(): void
+    {
+        // Set
+        $service = $this->instance(UpdateEventStatusService::class, m::mock(UpdateEventStatusService::class));
+        $user = User::create([
+            'name' => 'John Doe',
+            'email' => 'johnDoe@gmail.com'
+        ]);
+        Passport::actingAs($user);
+
+        $this->setupSubscribersData($user);
+        $this->setupDonationsData($user);
+        $this->setupMerchData($user);
+
+        // Expectations
+        $service->expects()
+            ->handle(m::type(UpdateEventStatusInput::class))
+            ->andThrow(Exception::class);
+
+        // Action
+        $result = $this->postJson('/api/v1/update-event', [
+            'id' => 1,
+            'status' => 1,
+            'type' => 'merch_sale',
+        ]);
+
+        // Assertions
+        $result->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
+        $result->assertContent('{"error":"Something unexpected has happened"}');
     }
 
     private function setupSubscribersData($user): void

@@ -39,7 +39,9 @@ class StreamEventsController extends Controller
                 compact('exception')
             );
 
-            return new JsonResponse([], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new JsonResponse([
+                'error' => 'Something unexpected has happened',
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -64,7 +66,9 @@ class StreamEventsController extends Controller
                 compact('exception')
             );
 
-            return new JsonResponse([], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new JsonResponse([
+                'error' => 'Something unexpected has happened',
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
